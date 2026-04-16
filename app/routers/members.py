@@ -6,7 +6,7 @@ from database import get_db
 from models import Member
 from schemas import MemberCreate, MemberUpdate, PasswordChange, MemberResponse
 
-router = APIRouter(prefix="/members", tags=["members"])
+router = APIRouter(prefix="/members", tags=["members"], redirect_slashes=False)
 
 def hash_pw(pw: str):
     return hashlib.sha256(pw.encode()).hexdigest()
