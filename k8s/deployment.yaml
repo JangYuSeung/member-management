@@ -1,0 +1,6 @@
+env:
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: rds-secret
+        key: DATABASE_URL

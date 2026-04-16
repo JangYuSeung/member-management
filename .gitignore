@@ -1,1 +1,5 @@
-Python
+.env
+venv/
+__pycache__/
+*.pyc
+k8s/secret.yaml
