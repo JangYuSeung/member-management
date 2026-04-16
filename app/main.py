@@ -4,7 +4,7 @@ from routers.members import router
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(root_path="/management")
 app.include_router(router)
 
 @app.get("/health")
