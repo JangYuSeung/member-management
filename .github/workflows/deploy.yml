@@ -1,0 +1,50 @@
+name: Deploy to EKS
+
+on:
+  push:
+    branches: [main]
+
+env:
+  AWS_REGION: ap-south-2
+  ECR_REGISTRY: 458894893383.dkr.ecr.ap-south-2.amazonaws.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: AWS 자격증명 설정
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: ECR 로그인
+      run: |
+        aws ecr get-login-password --region $AWS_REGION | \
+        docker login --username AWS --password-stdin $ECR_REGISTRY
+
+    - name: FastAPI 이미지 빌드 및 푸시
+      run: |
+        docker build -t $ECR_REGISTRY/member-fastapi:latest .
+        docker push $ECR_REGISTRY/member-fastapi:latest
+
+    - name: Nginx 이미지 빌드 및 푸시
+      run: |
+        docker build -t $ECR_REGISTRY/member-nginx:latest ./nginx
+        docker push $ECR_REGISTRY/member-nginx:latest
+
+    - name: kubeconfig 설정
+      run: |
+        aws eks update-kubeconfig --name st8-eks-cluster --region $AWS_REGION
+
+    - name: EKS 배포
+      run: |
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/secret.yaml
+
+        kubectl rollout restart deployment/fastapi-deployment
+        kubectl rollout restart deployment/nginx-deployment

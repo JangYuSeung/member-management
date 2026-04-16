@@ -1,6 +1,45 @@
-env:
-  - name: DATABASE_URL
-    valueFrom:
-      secretKeyRef:
-        name: rds-secret
-        key: DATABASE_URL
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      containers:
+      - name: fastapi
+        image: 458894893383.dkr.ecr.ap-south-2.amazonaws.com/member-fastapi:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: rds-secret
+              key: DATABASE_URL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: 458894893383.dkr.ecr.ap-south-2.amazonaws.com/member-nginx:latest
+        ports:
+        - containerPort: 80
