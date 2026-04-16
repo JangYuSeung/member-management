@@ -73,7 +73,7 @@
     <!-- 회원정보 수정 -->
     <div id="tab-update" class="card">
         <h2>회원정보 수정</h2>
-        <div class="form-group"><label>회원 ID</label><input id="upd-id" type="number" placeholder="수정할 회원 ID"></div>
+        <div class="form-group"><label>회원 ID</label><input id="upd-id" type="number" placeholder="수정할 회원 ID" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
         <div class="form-group"><label>이름</label><input id="upd-name" placeholder="새 이름"></div>
         <div class="form-group"><label>이메일</label><input id="upd-email" placeholder="새 이메일"></div>
         <div class="form-group"><label>전화번호</label><input id="upd-phone" placeholder="새 전화번호"></div>
@@ -84,7 +84,7 @@
     <!-- 비밀번호 변경 -->
     <div id="tab-password" class="card">
         <h2>비밀번호 변경</h2>
-        <div class="form-group"><label>회원 ID</label><input id="pw-id" type="number" placeholder="회원 ID"></div>
+        <div class="form-group"><label>회원 ID</label><input id="pw-id" type="number" placeholder="회원 ID" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
         <div class="form-group"><label>현재 비밀번호</label><input id="pw-current" type="password" placeholder="현재 비밀번호"></div>
         <div class="form-group"><label>새 비밀번호</label><input id="pw-new" type="password" placeholder="새 비밀번호"></div>
         <button onclick="changePassword()">변경하기</button>
@@ -94,7 +94,7 @@
     <!-- 회원 탈퇴 -->
     <div id="tab-delete" class="card">
         <h2>회원 탈퇴</h2>
-        <div class="form-group"><label>회원 ID</label><input id="del-id" type="number" placeholder="탈퇴할 회원 ID"></div>
+        <div class="form-group"><label>회원 ID</label><input id="del-id" type="number" placeholder="탈퇴할 회원 ID" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
         <button class="btn-danger" onclick="deleteMember()">탈퇴하기</button>
         <div class="result" id="del-result" style="display:none"></div>
     </div>
