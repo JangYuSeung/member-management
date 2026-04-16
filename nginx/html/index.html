@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원관리 시스템</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+        .header { background: #1a73e8; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 24px; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; background: white; color: #555; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .tab.active { background: #1a73e8; color: white; }
+        .card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: none; }
+        .card.active { display: block; }
+        h2 { font-size: 20px; margin-bottom: 20px; color: #333; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 14px; color: #555; margin-bottom: 6px; }
+        input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; }
+        input:focus { border-color: #1a73e8; }
+        button { padding: 11px 28px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+        button:hover { background: #1557b0; }
+        .btn-danger { background: #e53935; }
+        .btn-danger:hover { background: #b71c1c; }
+        .result { margin-top: 16px; padding: 14px; background: #f8f9fa; border-radius: 8px; font-size: 14px; color: #333; white-space: pre-wrap; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f0f2f5; padding: 12px; text-align: left; font-size: 14px; color: #555; }
+        td { padding: 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        tr:hover td { background: #fafafa; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; background: #e8f0fe; color: #1a73e8; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>👤 회원관리 시스템</h1>
+    <span id="memberCount" style="font-size:14px;"></span>
+</div>
+<div class="container">
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('list')">회원 목록</button>
+        <button class="tab" onclick="showTab('register')">회원가입</button>
+        <button class="tab" onclick="showTab('update')">회원정보 수정</button>
+        <button class="tab" onclick="showTab('password')">비밀번호 변경</button>
+        <button class="tab" onclick="showTab('delete')">회원 탈퇴</button>
+    </div>
+
+    <!-- 회원 목록 -->
+    <div id="tab-list" class="card active">
+        <h2>회원 목록</h2>
+        <button onclick="loadMembers()">🔄 새로고침</button>
+        <div style="overflow-x:auto; margin-top:16px;">
+            <table>
+                <thead><tr><th>ID</th><th>아이디</th><th>이름</th><th>이메일</th><th>전화번호</th><th>가입일</th></tr></thead>
+                <tbody id="memberTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 회원가입 -->
+    <div id="tab-register" class="card">
+        <h2>회원가입</h2>
+        <div class="form-group"><label>아이디</label><input id="reg-username" placeholder="아이디 입력"></div>
+        <div class="form-group"><label>이름</label><input id="reg-name" placeholder="이름 입력"></div>
+        <div class="form-group"><label>이메일</label><input id="reg-email" type="email" placeholder="이메일 입력"></div>
+        <div class="form-group"><label>비밀번호</label><input id="reg-password" type="password" placeholder="비밀번호 입력"></div>
+        <div class="form-group"><label>전화번호</label><input id="reg-phone" placeholder="010-0000-0000"></div>
+        <button onclick="register()">가입하기</button>
+        <div class="result" id="reg-result" style="display:none"></div>
+    </div>
+
+    <!-- 회원정보 수정 -->
+    <div id="tab-update" class="card">
+        <h2>회원정보 수정</h2>
+        <div class="form-group"><label>회원 ID</label><input id="upd-id" type="number" placeholder="수정할 회원 ID"></div>
+        <div class="form-group"><label>이름</label><input id="upd-name" placeholder="새 이름"></div>
+        <div class="form-group"><label>이메일</label><input id="upd-email" placeholder="새 이메일"></div>
+        <div class="form-group"><label>전화번호</label><input id="upd-phone" placeholder="새 전화번호"></div>
+        <button onclick="updateMember()">수정하기</button>
+        <div class="result" id="upd-result" style="display:none"></div>
+    </div>
+
+    <!-- 비밀번호 변경 -->
+    <div id="tab-password" class="card">
+        <h2>비밀번호 변경</h2>
+        <div class="form-group"><label>회원 ID</label><input id="pw-id" type="number" placeholder="회원 ID"></div>
+        <div class="form-group"><label>현재 비밀번호</label><input id="pw-current" type="password" placeholder="현재 비밀번호"></div>
+        <div class="form-group"><label>새 비밀번호</label><input id="pw-new" type="password" placeholder="새 비밀번호"></div>
+        <button onclick="changePassword()">변경하기</button>
+        <div class="result" id="pw-result" style="display:none"></div>
+    </div>
+
+    <!-- 회원 탈퇴 -->
+    <div id="tab-delete" class="card">
+        <h2>회원 탈퇴</h2>
+        <div class="form-group"><label>회원 ID</label><input id="del-id" type="number" placeholder="탈퇴할 회원 ID"></div>
+        <button class="btn-danger" onclick="deleteMember()">탈퇴하기</button>
+        <div class="result" id="del-result" style="display:none"></div>
+    </div>
+</div>
+
+<script>
+    const API = '/management';
+
+    function showTab(name) {
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            t.classList.toggle('active', ['list','register','update','password','delete'][i] === name);
+        });
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        if (name === 'list') loadMembers();
+    }
+
+    async function loadMembers() {
+        const res = await fetch(`${API}/members/`);
+        const data = await res.json();
+        document.getElementById('memberCount').textContent = `총 ${data.length}명`;
+        document.getElementById('memberTable').innerHTML = data.length === 0
+            ? '<tr><td colspan="6" style="text-align:center;color:#999;padding:30px">등록된 회원이 없습니다</td></tr>'
+            : data.map(m => `<tr>
+                <td><span class="badge">${m.id}</span></td>
+                <td>${m.username}</td><td>${m.name}</td><td>${m.email}</td>
+                <td>${m.phone || '-'}</td><td>${m.created_at.slice(0,10)}</td>
+            </tr>`).join('');
+    }
+
+    async function register() {
+        const res = await fetch(`${API}/members/`, {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username: document.getElementById('reg-username').value,
+                name: document.getElementById('reg-name').value,
+                email: document.getElementById('reg-email').value,
+                password: document.getElementById('reg-password').value,
+                phone: document.getElementById('reg-phone').value
+            })
+        });
+        const data = await res.json();
+        showResult('reg-result', res.ok ? `✅ 가입 완료! ID: ${data.id}` : `❌ ${data.detail}`);
+    }
+
+    async function updateMember() {
+        const id = document.getElementById('upd-id').value;
+        const body = {};
+        const name = document.getElementById('upd-name').value;
+        const email = document.getElementById('upd-email').value;
+        const phone = document.getElementById('upd-phone').value;
+        if (name) body.name = name;
+        if (email) body.email = email;
+        if (phone) body.phone = phone;
+        const res = await fetch(`${API}/members/${id}`, {
+            method: 'PUT', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        showResult('upd-result', res.ok ? `✅ 수정 완료! 이름: ${data.name}` : `❌ ${data.detail}`);
+    }
+
+    async function changePassword() {
+        const id = document.getElementById('pw-id').value;
+        const res = await fetch(`${API}/members/${id}/password`, {
+            method: 'PUT', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                current_password: document.getElementById('pw-current').value,
+                new_password: document.getElementById('pw-new').value
+            })
+        });
+        const data = await res.json();
+        showResult('pw-result', res.ok ? `✅ ${data.message}` : `❌ ${data.detail}`);
+    }
+
+    async function deleteMember() {
+        const id = document.getElementById('del-id').value;
+        if (!confirm(`ID ${id} 회원을 탈퇴 처리하시겠습니까?`)) return;
+        const res = await fetch(`${API}/members/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        showResult('del-result', res.ok ? `✅ ${data.message}` : `❌ ${data.detail}`);
+    }
+
+    function showResult(id, msg) {
+        const el = document.getElementById(id);
+        el.style.display = 'block';
+        el.textContent = msg;
+    }
+
+    loadMembers();
+</script>
+</body>
+</html>
