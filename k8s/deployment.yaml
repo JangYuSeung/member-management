@@ -17,7 +17,7 @@ spec:
         image: 458894893383.dkr.ecr.ap-south-2.amazonaws.com/member-fastapi:latest
         ports:
         - containerPort: 8000
-        env:
+        env: # secret.yaml에서 정의한 DATABASE_URL 환경변수를 FastAPI 컨테이너에 주입하는 설정
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
@@ -43,3 +43,10 @@ spec:
         image: 458894893383.dkr.ecr.ap-south-2.amazonaws.com/member-nginx:latest
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"

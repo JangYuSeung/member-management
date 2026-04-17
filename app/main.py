@@ -1,3 +1,4 @@
+# fastapi의 진입점
 from fastapi import FastAPI
 from database import Base, engine
 from routers.members import router
