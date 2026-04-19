@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: fastapi
-        image: 458894893383.dkr.ecr.ap-south-2.amazonaws.com/member-fastapi:proxy-v7cfbbbf
+        image: 458894893383.dkr.ecr.ap-south-2.amazonaws.com/member-fastapi:proxy-v1772e0e
         ports:
         - containerPort: 8000
         env: # secret.yaml에서 정의한 DATABASE_URL 환경변수를 FastAPI 컨테이너에 주입하는 설정
@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: 458894893383.dkr.ecr.ap-south-2.amazonaws.com/member-nginx:proxy-v7cfbbbf
+        image: 458894893383.dkr.ecr.ap-south-2.amazonaws.com/member-nginx:proxy-v1772e0e
         ports:
         - containerPort: 80
         resources:
