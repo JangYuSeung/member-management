@@ -1,0 +1,63 @@
+# 클러스터와 노드그룹 한번에 생성
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: st8-eks-cluster
+  region: ap-south-2
+
+iam:
+  withOIDC: true
+
+vpc:
+  id: "vpc-0ffb48c96e4dd6ec4"
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
+  subnets:
+    public:
+      ap-south-2a:
+        id: "subnet-03a31d895d1a3b55e"
+        tags:
+          kubernetes.io/role/elb: "1"
+      ap-south-2b:
+        id: "subnet-073613f4cd4206c99"
+        tags:
+          kubernetes.io/role/elb: "1"
+      ap-south-2c:
+        id: "subnet-0d3755194b0d19988"
+        tags:
+          kubernetes.io/role/elb: "1"
+    private:
+      ap-south-2a:
+        id: "subnet-0e93478bfcd7bbf14"
+        tags:
+          kubernetes.io/role/internal-elb: "1"
+      ap-south-2b:
+        id: "subnet-070dd748e9f71a094"
+        tags:
+          kubernetes.io/role/internal-elb: "1"
+      ap-south-2c:
+        id: "subnet-0b1460eb8fb3b1cc6"
+        tags:
+          kubernetes.io/role/internal-elb: "1"
+
+managedNodeGroups:
+  - name: st8-nodegroup-private
+    instanceType: t3.medium
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 2
+    privateNetworking: true
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        imageBuilder: true
+        cloudWatch: true
+        albIngress: true
+
+# 클러스터 + 노드그룹 한번에 생성
+# eksctl create cluster -f create-cluster-nodegroup.yaml
+
+# 확인
+# kubectl get nodes
+# eksctl get cluster --region ap-south-2

@@ -20,5 +20,5 @@ spec:
   ports:
   - port: 80
     targetPort: 80
-    nodePort: 30080
-  type: NodePort
+    nodePort: 30080 # ALB 대상그룹에서 이 포트로 접근
+  type: NodePort # ALB -> 노드:30080 -> nginx파드:80
